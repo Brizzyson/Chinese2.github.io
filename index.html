@@ -77,6 +77,7 @@
         .quiz-select-tile .tile-title { color:#ffe28a; font-weight:800; font-size:1.1rem; }
         .quiz-select-tile .tile-desc { color:#ead9ff; font-size:.8rem; margin-top:.35rem; }
         .quiz-select-tile:disabled { opacity:.48; cursor:not-allowed; }
+        #target-word.sentence-prompt { font-size: clamp(1.25rem, 5vw, 1.9rem) !important; line-height: 1.35; font-weight: 700; min-height: 4.5rem !important; padding: 0 .25rem; text-wrap: balance; }
         @media (max-width:640px) { .vaporwave-star { top:4.5rem; right:.7rem; font-size:2.2rem; } body::after { font-size:2rem; letter-spacing:.4rem; } }
 
     </style>
@@ -155,7 +156,8 @@
             <p class="text-sm text-violet-100/80 mb-5">Pick a vocabulary set first, then choose a study mode.</p>
             <div class="grid sm:grid-cols-2 gap-3">
                 <button class="quiz-select-tile" onclick="selectQuiz('characters')"><div class="tile-title">🀄 Chinese Vocabulary — 125 Characters</div><div class="tile-desc">Your original vocabulary set, preserved.</div></button>
-                <button class="quiz-select-tile" onclick="selectQuiz('clothing')"><div class="tile-title">👘 Clothing</div><div class="tile-desc">18 clothing words from your illustrated cards, with Traditional Chinese, pinyin, and English definitions.</div></button>
+                <button class="quiz-select-tile" onclick="selectQuiz('clothing')"><div class="tile-title">👘 Upcoming Quiz</div><div class="tile-desc">29 words: clothing, accessories and more, with Traditional Chinese, pinyin, and English definitions.</div></button>
+                <button class="quiz-select-tile" onclick="selectQuiz('colors')"><div class="tile-title">🎨 Colors</div><div class="tile-desc">11 color words with Traditional Chinese, pinyin, and English definitions.</div></button>
                 <button class="quiz-select-tile" disabled><div class="tile-title">＋ Future Quiz</div><div class="tile-desc">Reserved for a vocabulary set you add later.</div></button>
                 <button class="quiz-select-tile" disabled><div class="tile-title">＋ Future Quiz</div><div class="tile-desc">Reserved for another future vocabulary set.</div></button>
             </div>
@@ -178,6 +180,11 @@
                 <button onclick="startQuiz('type')" class="text-left bg-slate-700/80 hover:bg-slate-600 border border-slate-600 hover:border-amber-400/60 rounded-xl px-5 py-4 transition-all cursor-pointer">
                     <div class="font-bold text-slate-100">⌨️ Type the Answer</div>
                     <div class="text-xs text-slate-400 mt-0.5">See the character and type its English meaning.</div>
+                </button>
+
+                <button id="sentence-mode-btn" onclick="startQuiz('sentence')" class="hidden text-left bg-slate-700/80 hover:bg-slate-600 border border-slate-600 hover:border-amber-400/60 rounded-xl px-5 py-4 transition-all cursor-pointer">
+                    <div class="font-bold text-slate-100">✍️ Sentence Pattern</div>
+                    <div class="text-xs text-slate-400 mt-0.5">Write the full sentence: Subject + 穿/戴 + Color + 的 + Clothing item (e.g. 她戴紅色的腰帶).</div>
                 </button>
 
                 <button onclick="startFlashcards()" class="text-left bg-amber-500/10 hover:bg-amber-500/20 border border-amber-400/40 hover:border-amber-300 rounded-xl px-5 py-4 transition-all cursor-pointer mobile-action">
@@ -458,17 +465,45 @@
             { id: 1015, char: "皮鞋", pinyin: "pí xié", meaning: "Leather shoes" },
             { id: 1016, char: "長褲", pinyin: "cháng kù", meaning: "Long pants / Trousers" },
             { id: 1017, char: "睡衣", pinyin: "shuì yī", meaning: "Pajamas" },
-            { id: 1018, char: "手套", pinyin: "shǒu tào", meaning: "Mittens / Gloves" }
+            { id: 1018, char: "手套", pinyin: "shǒu tào", meaning: "Mittens / Gloves" },
+            { id: 1019, char: "滑板", pinyin: "huá bǎn", meaning: "Skateboard" },
+            { id: 1020, char: "衣服", pinyin: "yī fú", meaning: "Clothes" },
+            { id: 1021, char: "故事書", pinyin: "gù shi shū", meaning: "Storybook" },
+            { id: 1022, char: "電動玩具", pinyin: "diàn dòng wán jù", meaning: "Electronic toy / Video game" },
+            { id: 1023, char: "烤肉", pinyin: "kǎo ròu", meaning: "Barbecue / Grilled meat" },
+            { id: 1024, char: "耳環", pinyin: "ěr huán", meaning: "Earrings" },
+            { id: 1025, char: "手錶", pinyin: "shǒu biǎo", meaning: "Wristwatch" },
+            { id: 1026, char: "秋", pinyin: "qiū", meaning: "Autumn / Fall" },
+            { id: 1027, char: "項鍊", pinyin: "xiàng liàn", meaning: "Necklace" },
+            { id: 1028, char: "穿", pinyin: "chuān", meaning: "Wear (clothes)" },
+            { id: 1029, char: "戴", pinyin: "dài", meaning: "Wear (accessories)" }
+        ];
+        const colorsVocabList = [
+            { id: 1101, char: "紅色", pinyin: "hóng sè", meaning: "Red" },
+            { id: 1102, char: "橘色", pinyin: "jú sè", meaning: "Orange" },
+            { id: 1103, char: "黃色", pinyin: "huáng sè", meaning: "Yellow" },
+            { id: 1104, char: "綠色", pinyin: "lǜ sè", meaning: "Green" },
+            { id: 1105, char: "藍色", pinyin: "lán sè", meaning: "Blue" },
+            { id: 1106, char: "紫色", pinyin: "zǐ sè", meaning: "Purple" },
+            { id: 1107, char: "白色", pinyin: "bái sè", meaning: "White" },
+            { id: 1108, char: "黑色", pinyin: "hēi sè", meaning: "Black" },
+            { id: 1109, char: "咖啡色", pinyin: "kā fēi sè", meaning: "Brown" },
+            { id: 1110, char: "灰色", pinyin: "huī sè", meaning: "Gray" },
+            { id: 1111, char: "粉紅色", pinyin: "fěn hóng sè", meaning: "Pink" }
         ];
         let currentQuizId = 'characters';
         function selectQuiz(id) {
             currentQuizId = id;
-            vocabList = id === 'clothing' ? clothingVocabList : originalVocabList;
+            vocabList = id === 'clothing' ? clothingVocabList : (id === 'colors' ? colorsVocabList : originalVocabList);
             pool = 'all';
             document.getElementById('hdr-count').textContent = `${vocabList.length} Words`;
             document.getElementById('selected-quiz-description').textContent = id === 'clothing'
-                ? 'Clothing · 18 words · choose a mode below.'
-                : 'Chinese Vocabulary — 125 Characters · choose a mode below.';
+                ? 'Upcoming Quiz · 29 words · choose a mode below.'
+                : (id === 'colors'
+                    ? 'Colors · 11 words · choose a mode below.'
+                    : 'Chinese Vocabulary — 125 Characters · choose a mode below.');
+            document.getElementById('pool-all').textContent = `All words (${vocabList.length})`;
+            document.getElementById('sentence-mode-btn').classList.toggle('hidden', id !== 'clothing');
             document.getElementById('quiz-select-card').classList.add('hidden');
             document.getElementById('start-card').classList.remove('hidden');
             updatePoolUI();
@@ -483,11 +518,77 @@
         }
 
 
+        // ---------- Sentence Pattern mode (Upcoming Quiz only) ----------
+        // Pattern: Subject + 穿/戴 + Color + 的 + Clothing item   e.g. 她戴紅色的腰帶
+        const SENTENCE_SUBJECTS = [
+            { en: 'She',  zh: ['她'],         py: 'tā',     third: true },
+            { en: 'He',   zh: ['他'],         py: 'tā',     third: true },
+            { en: 'I',    zh: ['我'],         py: 'wǒ' },
+            { en: 'You',  zh: ['你', '妳'],   py: 'nǐ' },
+            { en: 'We',   zh: ['我們'],       py: 'wǒ men' },
+            { en: 'They', zh: ['他們', '她們'], py: 'tā men' },
+            { en: 'Mom',  zh: ['媽媽'],       py: 'mā ma',  third: true },
+            { en: 'Dad',  zh: ['爸爸'],       py: 'bà ba',  third: true }
+        ];
+        const SENTENCE_VERB_PY = { '穿': 'chuān', '戴': 'dài' };
+        // verb = the correct 穿/戴 for each item; en = English noun; plural = no "a/an"; extra = other accepted words
+        const SENTENCE_ITEMS = {
+            1001: { verb: '戴', en: 'belt', extra: [{ c: '腰帶', p: 'yāo dài' }] },
+            1002: { verb: '戴', en: 'earmuffs', plural: true },
+            1003: { verb: '穿', en: 'sweater' },
+            1004: { verb: '穿', en: 'running shoes', plural: true },
+            1005: { verb: '穿', en: 'short skirt' },
+            1006: { verb: '穿', en: 'socks', plural: true },
+            1007: { verb: '穿', en: 'collared shirt' },
+            1008: { verb: '戴', en: 'tie' },
+            1009: { verb: '穿', en: 'boots', plural: true },
+            1010: { verb: '穿', en: 'coat', forms: [{ c: '大衣', p: 'dà yī' }, { c: '外套', p: 'wài tào' }] },
+            1011: { verb: '穿', en: 'jeans', plural: true },
+            1012: { verb: '戴', en: 'hat' },
+            1013: { verb: '戴', en: 'scarf' },
+            1014: { verb: '穿', en: 'dress' },
+            1015: { verb: '穿', en: 'leather shoes', plural: true },
+            1016: { verb: '穿', en: 'long pants', plural: true },
+            1017: { verb: '穿', en: 'pajamas', plural: true },
+            1018: { verb: '戴', en: 'gloves', plural: true },
+            1020: { verb: '穿', en: 'clothes', plural: true },
+            1024: { verb: '戴', en: 'earrings', plural: true },
+            1025: { verb: '戴', en: 'watch' },
+            1027: { verb: '戴', en: 'necklace' }
+        };
+        function buildSentenceQuestion(item) {
+            const cfg = SENTENCE_ITEMS[item.id];
+            const forms = cfg.forms || [{ c: item.char, p: item.pinyin }, ...(cfg.extra || [])];
+            const subj = SENTENCE_SUBJECTS[Math.floor(Math.random() * SENTENCE_SUBJECTS.length)];
+            const color = colorsVocabList[Math.floor(Math.random() * colorsVocabList.length)];
+            const colorEn = color.meaning.toLowerCase();
+            const article = cfg.plural ? '' : (/^[aeiou]/.test(colorEn) ? 'an ' : 'a ');
+            const en = `${subj.en} ${subj.third ? 'wears' : 'wear'} ${article}${colorEn} ${cfg.en}.`;
+            const zh = `${subj.zh[0]}${cfg.verb}${color.char}的${forms[0].c}`;
+            const py = `${subj.py} ${SENTENCE_VERB_PY[cfg.verb]} ${color.pinyin} de ${forms[0].p}`;
+            return {
+                target: {
+                    id: item.id, char: en, pinyin: py, meaning: zh, speakText: zh,
+                    sentence: { subjects: subj.zh, verb: cfg.verb, color: color.char, forms: forms.map(f => f.c) }
+                },
+                options: [], userSelected: null, userTyped: '', status: null, isCorrect: null
+            };
+        }
+        // Ignores spaces and punctuation; requires subject + correct verb + color + 的 + clothing item
+        function checkSentence(input, target) {
+            const t = input.replace(/[\s\u3000。．.，,！!？?、]/g, '');
+            if (!t) return false;
+            const sn = target.sentence;
+            return sn.subjects.some(sj => sn.forms.some(f => t === sj + sn.verb + sn.color + '的' + f));
+        }
+
+
         const STORE_KEY = 'chineseVocabMissedIds';
         const MODES = {
             meaning:   { label: 'Identify Meaning',     prompt: 'Select the correct meaning' },
             recognize: { label: 'Recognize Character',  prompt: 'Select the correct translation' },
-            type:      { label: 'Type the Answer',      prompt: 'Type the English meaning' }
+            type:      { label: 'Type the Answer',      prompt: 'Type the English meaning' },
+            sentence:  { label: 'Sentence Pattern',     prompt: 'Write it in Chinese: Subject + 穿/戴 + Color + 的 + Item' }
         };
 
 
@@ -587,7 +688,8 @@
             [51,55],                                                   // people
             [35,39],                                                   // dine-in / takeout
             [113,115,116,117,118,119,120,121,122,123,124,125],         // function words
-            [101,103,106]                                              // general adjectives
+            [101,103,106],                                             // general adjectives
+            [1101,1102,1103,1104,1105,1106,1107,1108,1109,1110,1111]        // colors
         ];
         const catMap = {};
         CATEGORIES.forEach((ids, ci) => ids.forEach(id => { (catMap[id] = catMap[id] || new Set()).add(ci); }));
@@ -641,9 +743,15 @@
 
             let items = pool === 'missed' ? vocabList.filter(v => missedIds.has(v.id)) : vocabList;
             if (items.length === 0) items = vocabList;
+            if (mode === 'sentence') {
+                // only wearable items work in the 穿/戴 pattern
+                items = items.filter(v => SENTENCE_ITEMS[v.id]);
+                if (items.length === 0) items = vocabList.filter(v => SENTENCE_ITEMS[v.id]);
+            }
 
 
             questionsData = shuffle(items).map(item => {
+                if (mode === 'sentence') return buildSentenceQuestion(item);
                 const distractors = pickDistractors(item, mode);
                 return {
                     target: item,
@@ -664,7 +772,7 @@
             document.getElementById('result-card').classList.add('hidden');
             document.getElementById('quiz-card').classList.remove('hidden');
             document.getElementById('toggle-drawer-btn').style.display = '';
-            document.getElementById('mode-label').textContent = (currentQuizId === 'clothing' ? 'Clothing · ' : '') + MODES[mode].label + (pool === 'missed' ? ' · Missed' : '');
+            document.getElementById('mode-label').textContent = (currentQuizId === 'clothing' ? 'Upcoming Quiz · ' : (currentQuizId === 'colors' ? 'Colors · ' : '')) + MODES[mode].label + (pool === 'missed' ? ' · Missed' : '');
             document.getElementById('prompt-label').textContent = MODES[mode].prompt;
             document.getElementById('hdr-count').textContent = `${items.length} Words`;
             renderDrawerList();
@@ -682,6 +790,7 @@
             document.getElementById('question-number').textContent = `Question ${currentIndex + 1} of ${questionsData.length}`;
             document.getElementById('progress-bar').style.width = `${((currentIndex + 1) / questionsData.length) * 100}%`;
             document.getElementById('target-word').textContent = q.target.char;
+            document.getElementById('target-word').classList.toggle('sentence-prompt', currentMode === 'sentence');
             document.getElementById('prev-btn').disabled = currentIndex === 0;
             document.getElementById('next-btn-text').textContent = currentIndex === questionsData.length - 1 ? 'Finish' : 'Next';
             document.getElementById('study-btn').disabled = answered;
@@ -693,11 +802,12 @@
             optionsContainer.innerHTML = '';
 
 
-            if (currentMode === 'type') {
+            if (currentMode === 'type' || currentMode === 'sentence') {
                 optionsContainer.classList.add('hidden');
                 typeContainer.classList.remove('hidden');
                 input.value = answered ? q.userTyped : '';
                 input.disabled = answered;
+                input.placeholder = currentMode === 'sentence' ? 'Type the Chinese sentence...' : 'Type the English meaning...';
                 document.getElementById('type-submit').disabled = answered;
                 let border = 'border-slate-600 focus:border-amber-400';
                 if (q.status === 'correct') border = 'border-emerald-500 text-emerald-200';
@@ -742,7 +852,7 @@
                 fb.innerHTML = `<span>✓ Correct!</span> ${answer}`;
             } else if (q.status === 'wrong') {
                 fb.className = `text-rose-400 ${row}`;
-                const typed = currentMode === 'type' ? `<span class="text-xs font-normal text-slate-400">You typed "${esc(q.userTyped)}".</span>` : '';
+                const typed = (currentMode === 'type' || currentMode === 'sentence') ? `<span class="text-xs font-normal text-slate-400">You typed "${esc(q.userTyped)}".</span>` : '';
                 fb.innerHTML = `<span>✗ Incorrect.</span> ${typed} ${answer}`;
             } else if (q.status === 'study') {
                 fb.className = `text-violet-300 ${row}`;
@@ -822,7 +932,7 @@
             const val = document.getElementById('type-input').value.trim();
             if (!val) return;
             q.userTyped = val;
-            recordResult(q, checkTyped(val, q.target.meaning) ? 'correct' : 'wrong');
+            recordResult(q, (currentMode === 'sentence' ? checkSentence(val, q.target) : checkTyped(val, q.target.meaning)) ? 'correct' : 'wrong');
         }
 
 
@@ -928,7 +1038,8 @@
             // even when the active practice pool contains only a subset of words.
             const sets = [
                 { id: 'characters', title: '🀄 Chinese Vocabulary · 125 words', words: originalVocabList },
-                { id: 'clothing', title: '👘 Clothing · 18 words', words: clothingVocabList }
+                { id: 'clothing', title: '👘 Upcoming Quiz · 29 words', words: clothingVocabList },
+                { id: 'colors', title: '🎨 Colors · 11 words', words: colorsVocabList }
             ];
             const total = sets.reduce((sum, set) => sum + set.words.length, 0);
             document.getElementById('drawer-total-count').textContent = total;
@@ -950,7 +1061,7 @@
                         ? questionsData.findIndex(q => String(q.target.id) === String(item.id))
                         : -1;
                     const q = activeQuestionIndex >= 0 ? questionsData[activeQuestionIndex] : null;
-                    let badgeHTML = `<span class="text-[10px] bg-slate-700 text-slate-400 px-2 py-0.5 rounded font-mono">${set.id === 'clothing' ? 'CLOTHING' : 'VOCAB'}</span>`;
+                    let badgeHTML = `<span class="text-[10px] bg-slate-700 text-slate-400 px-2 py-0.5 rounded font-mono">${set.id === 'clothing' ? 'UPCOMING' : (set.id === 'colors' ? 'COLORS' : 'VOCAB')}</span>`;
                     if (q && q.status === 'correct') {
                         badgeHTML = `<span class="text-xs bg-emerald-950 text-emerald-400 border border-emerald-500/30 px-2 py-0.5 rounded font-mono">✓ Q${activeQuestionIndex + 1}</span>`;
                     } else if (q && q.status === 'wrong') {
@@ -1039,7 +1150,12 @@
 
         function speakCurrentQuestion() {
             const q = questionsData[currentIndex];
-            if (q && q.target) speakChinese(q.target.char);
+            if (!q || !q.target) return;
+            if (q.target.speakText !== undefined) {          // Sentence Pattern: play the answer only after answering
+                if (q.status !== null) speakChinese(q.target.speakText);
+                return;
+            }
+            speakChinese(q.target.char);
         }
 
         function startFlashcards() {
